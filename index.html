@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ODM·ONE — Correspondence Triage &amp; Decision Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1C2A22;
+  --forest:#0E5C3A;
+  --forest-deep:#0A4A2F;
+  --mist:#F4F6F2;
+  --card:#FFFFFF;
+  --line:#DCE2DA;
+  --muted:#5C6B60;
+  --gold:#C7A034;
+  --red:#BF3B2B;
+  --red-bg:#FBEEEC;
+  --amber:#D98E04;
+  --amber-bg:#FCF4E4;
+  --leaf:#2E7D4F;
+  --leaf-bg:#EBF4EE;
+  --slate:#2C5F8A;
+  --slate-bg:#EBF1F7;
+  --gray-bg:#EFF1EE;
+  --serif:'Source Serif 4', Georgia, serif;
+  --sans:'IBM Plex Sans', system-ui, sans-serif;
+  --mono:'IBM Plex Mono', ui-monospace, monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--mist);color:var(--ink);font-size:14.5px;line-height:1.5}
+button{font-family:var(--sans);cursor:pointer}
+a{color:var(--forest)}
+
+/* ---------- Masthead ---------- */
+.masthead{background:var(--forest-deep);color:#fff;border-bottom:4px solid var(--gold)}
+.masthead-inner{max-width:1240px;margin:0 auto;padding:22px 28px 18px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand .agency{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#BFD6C6;margin-bottom:6px}
+.brand h1{font-family:var(--serif);font-weight:700;font-size:30px;letter-spacing:.01em;line-height:1.1}
+.brand h1 .dot{color:var(--gold)}
+.brand .sub{font-size:13px;color:#CDE0D3;margin-top:5px}
+.mast-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.today{font-family:var(--mono);font-size:12.5px;color:#DCEAE0}
+.today strong{color:#fff}
+.sync{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;letter-spacing:.05em;border-radius:20px;padding:4px 12px;border:1px solid}
+.sync .dot{width:8px;height:8px;border-radius:50%}
+.sync.live{background:rgba(46,125,79,.25);border-color:#3E8F63;color:#D7EFE0}
+.sync.live .dot{background:#5FD495;box-shadow:0 0 6px #5FD495}
+.sync.sample{background:rgba(199,160,52,.18);border-color:#A98622;color:#F0E2B8}
+.sync.sample .dot{background:var(--gold)}
+.sync.err{background:rgba(191,59,43,.22);border-color:#C46557;color:#F6D9D4}
+.sync.err .dot{background:#F08573}
+.btn{border:1px solid transparent;border-radius:6px;padding:8px 14px;font-size:13px;font-weight:600;text-decoration:none;display:inline-block}
+.btn-gold{background:var(--gold);color:#2A2208;border-color:#A98622}
+.btn-gold:hover{background:#D4AF44}
+.btn-ghost{background:transparent;color:#fff;border-color:#4E7A62}
+.btn-ghost:hover{background:rgba(255,255,255,.08)}
+.btn-forest{background:var(--forest);color:#fff}
+.btn-forest:hover{background:#0C532F}
+.btn-line{background:#fff;color:var(--ink);border-color:var(--line)}
+.btn-line:hover{border-color:var(--forest);color:var(--forest)}
+
+/* ---------- KPI strip ---------- */
+.kpis{max-width:1240px;margin:-1px auto 0;padding:20px 28px 0;display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--muted)}
+.kpi.red::before{background:var(--red)} .kpi.amber::before{background:var(--amber)}
+.kpi.leaf::before{background:var(--leaf)} .kpi.slate::before{background:var(--slate)}
+.kpi.gold::before{background:var(--gold)}
+.kpi .num{font-family:var(--mono);font-size:26px;font-weight:600;line-height:1}
+.kpi .lbl{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:5px;font-weight:600}
+
+/* ---------- Tabs ---------- */
+.tabs{max-width:1240px;margin:22px auto 0;padding:0 28px;display:flex;gap:4px;border-bottom:2px solid var(--line)}
+.tab{background:none;border:none;padding:10px 16px 11px;font-size:14px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px}
+.tab:hover{color:var(--forest)}
+.tab.active{color:var(--forest);border-bottom-color:var(--forest)}
+.wrap{max-width:1240px;margin:0 auto;padding:22px 28px 60px}
+.panel{display:none}
+.panel.active{display:block}
+h2.section{font-family:var(--serif);font-size:20px;font-weight:700;margin:6px 0 4px}
+p.section-note{font-size:13px;color:var(--muted);margin-bottom:14px}
+
+/* ---------- Routing-slip rows ---------- */
+.slip-list{display:flex;flex-direction:column;gap:10px}
+.slip{background:var(--card);border:1px solid var(--line);border-radius:8px;display:flex;overflow:hidden}
+.spine{width:8px;flex:none}
+.spine.red{background:var(--red)} .spine.amber{background:var(--amber)}
+.spine.leaf{background:var(--leaf)} .spine.slate{background:var(--slate)}
+.spine.none{background:repeating-linear-gradient(45deg,#C9CFC7,#C9CFC7 4px,#EDEFEA 4px,#EDEFEA 8px)}
+.slip-body{padding:12px 16px;flex:1;min-width:0}
+.slip-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ctrl{font-family:var(--mono);font-size:11.5px;font-weight:600;color:var(--forest);background:var(--leaf-bg);border:1px solid #CBE0D2;border-radius:4px;padding:1px 7px;letter-spacing:.03em}
+.slip-subject{font-weight:600;font-size:15px}
+.slip-meta{font-size:12.5px;color:var(--muted);margin-top:3px}
+.slip-meta b{color:var(--ink);font-weight:600}
+.slip-action{font-size:13px;margin-top:6px}
+.slip-side{flex:none;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:6px;padding:12px 16px;border-left:1px dashed var(--line);min-width:170px}
+.badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border-radius:4px;padding:2px 8px}
+.badge.red{background:var(--red-bg);color:var(--red)}
+.badge.amber{background:var(--amber-bg);color:#8A5A02}
+.badge.leaf{background:var(--leaf-bg);color:var(--leaf)}
+.badge.slate{background:var(--slate-bg);color:var(--slate)}
+.badge.gray{background:var(--gray-bg);color:var(--muted)}
+.due{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.due.hot{color:var(--red);font-weight:600}
+.empty{background:var(--card);border:1px dashed var(--line);border-radius:8px;padding:22px;text-align:center;color:var(--muted);font-size:13.5px}
+
+/* ---------- Log table ---------- */
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:4px 0 14px}
+.toolbar select,.toolbar input[type=text]{font-family:var(--sans);font-size:13px;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink)}
+.toolbar input[type=text]{min-width:220px}
+.spacer{flex:1}
+.tablecard{background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:auto}
+table{border-collapse:collapse;width:100%;min-width:1080px}
+th{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:2px solid var(--line);background:#FAFBF9;white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid #ECEFEA;font-size:13px;vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.mono,.mono{font-family:var(--mono);font-size:12px}
+td .prio-chip{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:12.5px;white-space:nowrap}
+.dotp{width:10px;height:10px;border-radius:2px;flex:none}
+.dotp.red{background:var(--red)} .dotp.amber{background:var(--amber)}
+.dotp.leaf{background:var(--leaf)} .dotp.slate{background:var(--slate)} .dotp.none{background:#C9CFC7}
+.aging{font-family:var(--mono);font-size:12px}
+.aging.warn{color:var(--amber);font-weight:600}
+.aging.hot{color:var(--red);font-weight:600}
+.attach{font-size:12px;color:var(--slate)}
+
+/* ---------- Protocol ---------- */
+.proto-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:8px}
+.proto{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px 20px;border-top:5px solid var(--muted)}
+.proto.red{border-top-color:var(--red)} .proto.amber{border-top-color:var(--amber)}
+.proto.leaf{border-top-color:var(--leaf)} .proto.slate{border-top-color:var(--slate)}
+.proto h3{font-family:var(--serif);font-size:17px;margin-bottom:2px}
+.proto .sla{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-bottom:10px;letter-spacing:.04em}
+.proto ul{padding-left:18px;font-size:13.5px;color:#33413A}
+.proto li{margin:5px 0}
+.rulecard{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--gold);border-radius:8px;padding:16px 20px;margin-top:16px;font-size:13.5px}
+.rulecard h3{font-family:var(--serif);font-size:16px;margin-bottom:6px}
+
+/* ---------- Modal / digest ---------- */
+.overlay{display:none;position:fixed;inset:0;background:rgba(20,32,25,.45);z-index:40;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:10px;max-width:720px;width:100%;padding:24px 26px;border-top:5px solid var(--forest)}
+.modal h3{font-family:var(--serif);font-size:19px;margin-bottom:14px}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+.digest-box{width:100%;font-family:var(--mono);font-size:12.5px;line-height:1.55;padding:14px;border:1px solid var(--line);border-radius:8px;background:#FAFBF9;white-space:pre;min-height:320px}
+.footer{max-width:1240px;margin:0 auto;padding:0 28px 40px;font-size:12px;color:var(--muted)}
+.footer .mono{font-size:11.5px}
+
+@media(max-width:900px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .proto-grid{grid-template-columns:1fr}
+  .slip{flex-direction:column}
+  .slip-side{border-left:none;border-top:1px dashed var(--line);align-items:flex-start;flex-direction:row;flex-wrap:wrap}
+  .spine{width:100%;height:6px}
+}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand">
+      <div class="agency">MBHTE · Bangsamoro Autonomous Region in Muslim Mindanao</div>
+      <h1>ODM<span class="dot">·</span>ONE</h1>
+      <div class="sub">Correspondence Triage &amp; Decision Hub — Office of the Deputy Minister</div>
+    </div>
+    <div class="mast-right">
+      <div class="today">Registry date: <strong id="todayLabel"></strong></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="sync sample" id="syncPill"><span class="dot"></span><span id="syncText">CONNECTING…</span></span>
+        <button class="btn btn-ghost" onclick="openDigest()">Morning digest</button>
+        <a class="btn btn-gold" id="encodeBtn" href="#" target="_blank" rel="noopener" style="display:none">Encode in Sheet ↗</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="kpis" aria-label="Triage summary">
+  <div class="kpi red"><div class="num" id="kImmediate">0</div><div class="lbl">Immediate decisions open</div></div>
+  <div class="kpi amber"><div class="num" id="kDue">0</div><div class="lbl">Due within 48 hours</div></div>
+  <div class="kpi red"><div class="num" id="kOverdue">0</div><div class="lbl">Overdue</div></div>
+  <div class="kpi gold"><div class="num" id="kUntriaged">0</div><div class="lbl">In receiving tray</div></div>
+  <div class="kpi leaf"><div class="num" id="kDone">0</div><div class="lbl">Completed</div></div>
+</section>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" data-panel="desk" onclick="switchTab(this)">Today's Desk</button>
+  <button class="tab" data-panel="log" onclick="switchTab(this)">Correspondence Log</button>
+  <button class="tab" data-panel="protocol" onclick="switchTab(this)">Triage Protocol</button>
+</nav>
+
+<main class="wrap">
+
+  <!-- ============ TODAY'S DESK ============ -->
+  <section class="panel active" id="panel-desk">
+    <h2 class="section">Requires the Deputy Minister today</h2>
+    <p class="section-note">Red items, anything overdue, and anything due within 48 hours. Each item should arrive with its CSW Annex B attached.</p>
+    <div class="slip-list" id="deskUrgent"></div>
+
+    <h2 class="section" style="margin-top:28px">Receiving tray — awaiting triage</h2>
+    <p class="section-note">Rows in the Sheet with no priority assigned yet. Classify them in the Sheet and they will move into the routing queue here.</p>
+    <div class="slip-list" id="deskUntriaged"></div>
+
+    <h2 class="section" style="margin-top:28px">Aging watch — pending 3+ days</h2>
+    <p class="section-note">Items endorsed to offices that have not closed. Follow up with the office concerned.</p>
+    <div class="slip-list" id="deskAging"></div>
+  </section>
+
+  <!-- ============ LOG ============ -->
+  <section class="panel" id="panel-log">
+    <h2 class="section">Correspondence log</h2>
+    <p class="section-note">Mirrors the ODM Google Sheet — the Sheet is the system of record; edit there and this page updates itself.</p>
+    <div class="toolbar">
+      <select id="fPrio" onchange="renderLog()">
+        <option value="">All priorities</option>
+        <option value="red">Red — Immediate Decision</option>
+        <option value="amber">Yellow — Decision This Week</option>
+        <option value="leaf">Green — For Information</option>
+        <option value="slate">Blue — For Delegation</option>
+        <option value="none">Untriaged</option>
+      </select>
+      <select id="fStatus" onchange="renderLog()">
+        <option value="">All statuses</option>
+        <option>In Progress</option>
+        <option>Completed</option>
+      </select>
+      <input type="text" id="fSearch" placeholder="Search sender, subject, office…" oninput="renderLog()">
+      <div class="spacer"></div>
+      <button class="btn btn-line" onclick="loadFromSheet(true)">Refresh now</button>
+      <button class="btn btn-line" onclick="exportCSV()">Export CSV</button>
+    </div>
+    <div class="tablecard">
+      <table>
+        <thead><tr>
+          <th>Control No.</th><th>Priority</th><th>Received</th><th>Sender</th><th>Subject</th>
+          <th>Category</th><th>Deadline</th><th>Office</th><th>Action required</th>
+          <th>DM decision</th><th>Days pending</th><th>Status</th><th>Completed</th><th>Attachment</th>
+        </tr></thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ PROTOCOL ============ -->
+  <section class="panel" id="panel-protocol">
+    <h2 class="section">Triage classification criteria</h2>
+    <p class="section-note">Applied by the screening officer on receipt, before any document reaches the Deputy Minister's desk.</p>
+    <div class="proto-grid">
+      <div class="proto red">
+        <h3>Red — Immediate Decision</h3>
+        <div class="sla">SLA: DM decision within 24 hours</div>
+        <ul>
+          <li>Deadline falls within 48 hours of receipt</li>
+          <li>Requires the DM's signature or a decision only the DM can make</li>
+          <li>Involves external agencies (TESDA, CSC, DBM, OCM) with fixed response dates</li>
+          <li>Legal, audit, or compliance exposure if unanswered</li>
+        </ul>
+      </div>
+      <div class="proto amber">
+        <h3>Yellow — Decision This Week</h3>
+        <div class="sla">SLA: DM decision within 5 working days</div>
+        <ul>
+          <li>Deadline within 5 working days</li>
+          <li>Designations, endorsements, and representation requests</li>
+          <li>Routine approvals that still require DM action</li>
+        </ul>
+      </div>
+      <div class="proto leaf">
+        <h3>Green — For Information</h3>
+        <div class="sla">SLA: acknowledge and close within 1 working day</div>
+        <ul>
+          <li>Advisories, circulars, newsletters — no action required of the DM</li>
+          <li>Filed with control number for the record, then closed</li>
+        </ul>
+      </div>
+      <div class="proto slate">
+        <h3>Blue — For Delegation</h3>
+        <div class="sla">SLA: route to office concerned within 1 working day</div>
+        <ul>
+          <li>Action required, but within an office's delegated authority</li>
+          <li>Routed directly to the office concerned; DM sees only the weekly summary</li>
+          <li>Governed by the ODM delegation of authority matrix</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rulecard">
+      <h3>Intake rule</h3>
+      No document reaches the Deputy Minister's desk without (1) a control number, (2) a completed Category and Deadline field, and (3) for Red and Yellow items, a one-page CSW Annex B stating the recommended action. The DM decides; the staff work is done before the folder opens.
+    </div>
+    <div class="rulecard">
+      <h3>Weekly review</h3>
+      Every Friday, a 15-minute review with the DM or Executive Assistant covering: overdue items, items awaiting DM decision for more than 3 days, and the count completed. Tracked metric: <b>average days from receipt to DM decision</b>.
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  ODM·ONE reading layer · The Google Sheet is the system of record — all encoding, triage, and status updates happen in the Sheet.
+  <span class="mono">Document control aligned to ISO 9001:2015 / TESDA QP 02.</span>
+</footer>
+
+<!-- ============ DIGEST MODAL ============ -->
+<div class="overlay" id="digestOverlay" onclick="if(event.target===this)closeDigest()">
+  <div class="modal" role="dialog" aria-label="Morning digest">
+    <h3>Morning digest — ready to send</h3>
+    <textarea class="digest-box" id="digestText" readonly></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-line" onclick="closeDigest()">Close</button>
+      <button class="btn btn-forest" onclick="copyDigest(this)">Copy to clipboard</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   CONFIGURATION — the only part you need to edit
+   ════════════════════════════════════════════════════════════════
+   1. In your Google Sheet: File → Share → Publish to web
+      → pick the log tab → format: CSV → Publish → copy the URL.
+   2. Paste it between the quotes below.
+   3. (Optional) Paste the Sheet's normal edit URL so the
+      "Encode in Sheet" button appears for staff.
+   ════════════════════════════════════════════════════════════════ */
+const SHEET_CSV_URL  = '';   // https://docs.google.com/spreadsheets/d/e/2PACX-1vSQa2Q6AYuZYuNcmAXaqueD2pEjc1ErcWW5WASfGShO_yrV6Poriz45D6DwmBCKZb7Rn74gyz1_NRxc/pub?gid=0&single=true&output=csv
+const SHEET_EDIT_URL = '';   // https://docs.google.com/spreadsheets/d/1sTLBYlcumX4XJX7dDwzIMlVForn8b9PRG-lfYp0_4xM/edit?gid=0#gid=0
+const POLL_SECONDS   = 120;  // re-check the Sheet every 2 minutes
+/* ════════════════════════════════════════════════════════════════ */
+
+const TODAY = new Date();
+const PRIO = {
+  red:  {label:'Red — Immediate Decision', short:'RED', cls:'red'},
+  amber:{label:'Yellow — Decision This Week', short:'YELLOW', cls:'amber'},
+  leaf: {label:'Green — For Information', short:'GREEN', cls:'leaf'},
+  slate:{label:'Blue — For Delegation', short:'BLUE', cls:'slate'},
+  none: {label:'Untriaged', short:'UNTRIAGED', cls:'none'}
+};
+
+/* Sample data shown only until a Sheet URL is configured */
+const SAMPLE = [
+  ['Red – Immediate Decision','2026-07-01','UNFPA','AAP GiHA PSHEA Luncheon','For Decision','2026-07-02','Planning Division','Planning Division Chief and Education Support Division representative','','In Progress','',''],
+  ['Yellow – Decision This Week','2026-07-01','DepEd','Consultation Meeting','For Endorsement','2026-07-03','Planning Division','Designate Planning Division representatives','','In Progress','',''],
+  ['Green – For Information','2026-07-01','CSC','CSC Advisory','For Information','','','No action required','No action required','Completed','2026-07-01',''],
+  ['Green – For Information','2026-07-01','TESDA','TESDA Memorandum','For Information','','','No action required','No action required','Completed','2026-07-01',''],
+  ['Green – For Information','2026-07-01','OPAPRU','OPAPRU Newsletter','For Information','','','No action required','No action required','Completed','2026-07-01',''],
+  ['Green – For Information','2026-07-02','OCM','Inventory of Terminal Leave Benefits','For Information','2026-07-17','HRMD','Submit total leave credits of all employees','No action required','In Progress','','Memorandum Circular No. 0099 s. 2026.pdf'],
+  ['','2026-07-02','PPSTA','Intent to Secure a Regional Memorandum from MBHTE for PPSTA Marketing Activities','','','','','','In Progress','','PPSTA.pdf'],
+  ['','2026-07-02','DOST-PTRI','Invitation to PTF Compliance','','','HRMD','','No action required','In Progress','','']
+];
+const SAMPLE_HEADERS = ['Priority','Date Received','Sender','Subject','Category','Deadline','Office Concerned','Action Required / Recommendation','DM Decision','Status','Date Completed','File Attachment'];
+
+let items = [];
+let lastGood = null;
+
+/* ============ CSV parsing (handles quotes, commas, newlines) ============ */
+function parseCSV(text){
+  const rows = []; let row = [], field = '', inQ = false;
+  for (let i = 0; i < text.length; i++){
+    const c = text[i];
+    if (inQ){
+      if (c === '"'){ if (text[i+1] === '"'){ field += '"'; i++; } else inQ = false; }
+      else field += c;
+    } else {
+      if (c === '"') inQ = true;
+      else if (c === ','){ row.push(field); field = ''; }
+      else if (c === '\n' || c === '\r'){
+        if (c === '\r' && text[i+1] === '\n') i++;
+        row.push(field); field = '';
+        if (row.some(f => f.trim() !== '')) rows.push(row);
+        row = [];
+      }
+      else field += c;
+    }
+  }
+  row.push(field);
+  if (row.some(f => f.trim() !== '')) rows.push(row);
+  return rows;
+}
+
+/* ============ Column mapping by header name (order-independent) ============ */
+function headerIndex(headers){
+  const norm = h => h.toLowerCase().replace(/[^a-z]/g,'');
+  const find = (...keys) => {
+    for (const k of keys){
+      const idx = headers.findIndex(h => norm(h).includes(k));
+      if (idx !== -1) return idx;
+    }
+    return -1;
+  };
+  return {
+    prio:     find('priority'),
+    received: find('datereceived','received'),
+    sender:   find('sender','from'),
+    subject:  find('subject'),
+    category: find('category'),
+    deadline: find('deadline','duedate'),
+    office:   find('officeconcerned','office'),
+    action:   find('actionrequired','recommendation','action'),
+    dm:       find('dmdecision','decision'),
+    status:   find('status'),
+    completed:find('datecompleted','completed'),
+    attach:   find('fileattachment','attachment','file')
+  };
+}
+
+function normPrio(s){
+  s = (s||'').toLowerCase();
+  if (s.includes('red')) return 'red';
+  if (s.includes('yellow')) return 'amber';
+  if (s.includes('green')) return 'leaf';
+  if (s.includes('blue')) return 'slate';
+  return 'none';
+}
+function normDate(s){
+  s = (s||'').trim();
+  if (!s) return '';
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+  const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/); // M/D/YYYY from Sheets
+  if (m){
+    let y = m[3].length === 2 ? '20'+m[3] : m[3];
+    return `${y}-${String(m[1]).padStart(2,'0')}-${String(m[2]).padStart(2,'0')}`;
+  }
+  const dt = new Date(s);
+  return isNaN(dt) ? '' : dt.toISOString().slice(0,10);
+}
+function normStatus(s){
+  s = (s||'').toLowerCase();
+  if (s.includes('complete') || s.includes('done') || s.includes('closed')) return 'Completed';
+  return 'In Progress';
+}
+
+function rowsToItems(headers, dataRows){
+  const ix = headerIndex(headers);
+  const get = (row, i) => i === -1 ? '' : (row[i]||'').trim();
+  return dataRows
+    .filter(r => get(r, ix.sender) || get(r, ix.subject))
+    .map((r, n) => ({
+      id: 'ODM-' + TODAY.getFullYear() + '-' + String(n+1).padStart(3,'0'),
+      prio: normPrio(get(r, ix.prio)),
+      received: normDate(get(r, ix.received)),
+      sender: get(r, ix.sender),
+      subject: get(r, ix.subject),
+      category: get(r, ix.category),
+      deadline: normDate(get(r, ix.deadline)),
+      office: get(r, ix.office),
+      action: get(r, ix.action),
+      dm: get(r, ix.dm),
+      status: normStatus(get(r, ix.status)),
+      completed: normDate(get(r, ix.completed)),
+      attach: get(r, ix.attach)
+    }));
+}
+
+/* ============ Live loading ============ */
+function setSync(mode, text){
+  const pill = document.getElementById('syncPill');
+  pill.className = 'sync ' + mode;
+  document.getElementById('syncText').textContent = text;
+}
+function timeNow(){ return new Date().toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}); }
+
+async function loadFromSheet(manual){
+  if (!SHEET_CSV_URL){
+    items = rowsToItems(SAMPLE_HEADERS, SAMPLE);
+    setSync('sample','SAMPLE DATA — NOT CONNECTED');
+    renderAll();
+    return;
+  }
+  try{
+    const sep = SHEET_CSV_URL.includes('?') ? '&' : '?';
+    const res = await fetch(SHEET_CSV_URL + sep + 'cachebust=' + Date.now(), {cache:'no-store'});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    const rows = parseCSV(text);
+    if (rows.length < 2) throw new Error('Sheet returned no data rows');
+    items = rowsToItems(rows[0], rows.slice(1));
+    lastGood = items;
+    setSync('live','LIVE · SYNCED ' + timeNow());
+    renderAll();
+  }catch(err){
+    console.error('Sheet fetch failed:', err);
+    if (lastGood){ items = lastGood; setSync('err','SYNC ERROR — SHOWING LAST DATA'); }
+    else { items = rowsToItems(SAMPLE_HEADERS, SAMPLE); setSync('err','SYNC ERROR — CHECK PUBLISHED URL'); }
+    renderAll();
+  }
+}
+
+/* ============ Helpers ============ */
+const d = s => s ? new Date(s + 'T00:00:00') : null;
+const fmt = s => { if(!s) return '—'; const dt = d(s); return dt.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'}); };
+const daysBetween = (a,b) => Math.round((b-a)/86400000);
+const daysPending = it => (it.status==='Completed' || !it.received) ? null : Math.max(0, daysBetween(d(it.received), TODAY));
+const hoursToDeadline = it => it.deadline ? (d(it.deadline)-TODAY)/3600000 : null;
+const isOverdue = it => it.status!=='Completed' && it.deadline && d(it.deadline) < new Date(TODAY.toDateString());
+const isDueSoon = it => { const h = hoursToDeadline(it); return it.status!=='Completed' && h!==null && h>=-24 && h<=48 && !isOverdue(it); };
+const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ============ Rendering ============ */
+function renderKPIs(){
+  const open = items.filter(i=>i.status!=='Completed');
+  document.getElementById('kImmediate').textContent = open.filter(i=>i.prio==='red').length;
+  document.getElementById('kDue').textContent = open.filter(isDueSoon).length;
+  document.getElementById('kOverdue').textContent = open.filter(isOverdue).length;
+  document.getElementById('kUntriaged').textContent = open.filter(i=>i.prio==='none').length;
+  document.getElementById('kDone').textContent = items.filter(i=>i.status==='Completed').length;
+}
+
+function slipHTML(it){
+  const p = PRIO[it.prio];
+  const over = isOverdue(it);
+  const dueTxt = it.deadline ? (over ? 'OVERDUE — due ' + fmt(it.deadline) : 'Due ' + fmt(it.deadline)) : 'No deadline';
+  const dp = daysPending(it);
+  return `<div class="slip">
+    <div class="spine ${p.cls}"></div>
+    <div class="slip-body">
+      <div class="slip-top">
+        <span class="ctrl">${it.id}</span>
+        <span class="slip-subject">${esc(it.subject)}</span>
+      </div>
+      <div class="slip-meta">From <b>${esc(it.sender)}</b> · Received ${fmt(it.received)}${it.office ? ' · Endorsed to <b>'+esc(it.office)+'</b>' : ''}${it.attach ? ' · 📎 <span class="attach">'+esc(it.attach)+'</span>' : ''}</div>
+      ${it.action ? `<div class="slip-action">→ ${esc(it.action)}</div>` : ''}
+    </div>
+    <div class="slip-side">
+      <span class="badge ${p.cls==='none'?'gray':p.cls}">${p.short}</span>
+      <span class="due ${over||isDueSoon(it)?'hot':''}">${dueTxt}</span>
+      ${dp!==null ? `<span class="due">${dp} day${dp===1?'':'s'} pending</span>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderDesk(){
+  const open = items.filter(i=>i.status!=='Completed');
+  const urgent = open.filter(i => i.prio==='red' || isOverdue(i) || isDueSoon(i));
+  const untriaged = open.filter(i=>i.prio==='none' && !urgent.includes(i));
+  const aging = open.filter(i => !urgent.includes(i) && i.prio!=='none' && (daysPending(i)??0) >= 3);
+  document.getElementById('deskUrgent').innerHTML = urgent.length ? urgent.map(slipHTML).join('') : `<div class="empty">Nothing requires the Deputy Minister right now. The desk is clear.</div>`;
+  document.getElementById('deskUntriaged').innerHTML = untriaged.length ? untriaged.map(slipHTML).join('') : `<div class="empty">Receiving tray is empty — every item has been classified.</div>`;
+  document.getElementById('deskAging').innerHTML = aging.length ? aging.map(slipHTML).join('') : `<div class="empty">No items aging past 3 days.</div>`;
+}
+
+function renderLog(){
+  const fp = document.getElementById('fPrio').value;
+  const fs = document.getElementById('fStatus').value;
+  const q = document.getElementById('fSearch').value.trim().toLowerCase();
+  const rows = items.filter(i =>
+    (!fp || i.prio===fp) && (!fs || i.status===fs) &&
+    (!q || [i.sender,i.subject,i.office,i.id].join(' ').toLowerCase().includes(q))
+  );
+  document.getElementById('logBody').innerHTML = rows.map(it => {
+    const p = PRIO[it.prio];
+    const dp = daysPending(it);
+    const agingCls = dp===null ? '' : dp>=5 ? 'hot' : dp>=3 ? 'warn' : '';
+    return `<tr>
+      <td class="mono">${it.id}</td>
+      <td><span class="prio-chip"><span class="dotp ${p.cls}"></span>${p.short}</span></td>
+      <td class="mono">${fmt(it.received)}</td>
+      <td><b>${esc(it.sender)}</b></td>
+      <td>${esc(it.subject)}</td>
+      <td>${esc(it.category)||'—'}</td>
+      <td class="mono ${isOverdue(it)?'aging hot':''}">${fmt(it.deadline)}${isOverdue(it)?' ⚠':''}</td>
+      <td>${esc(it.office)||'—'}</td>
+      <td>${esc(it.action)||'—'}</td>
+      <td>${esc(it.dm)||'—'}</td>
+      <td class="aging ${agingCls}">${dp===null?'—':dp}</td>
+      <td>${it.status}</td>
+      <td class="mono">${fmt(it.completed)}</td>
+      <td>${it.attach?'📎 <span class="attach">'+esc(it.attach)+'</span>':'—'}</td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="14" style="text-align:center;color:var(--muted);padding:24px">No entries match these filters.</td></tr>`;
+}
+
+function renderAll(){ renderKPIs(); renderDesk(); renderLog(); }
+
+function switchTab(btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-'+btn.dataset.panel).classList.add('active');
+}
+
+/* ============ Digest ============ */
+function openDigest(){
+  const open = items.filter(i=>i.status!=='Completed');
+  const line = it => `  [${it.id}] ${it.sender} — ${it.subject}` +
+    (it.deadline ? ` (due ${fmt(it.deadline)})` : '') +
+    (it.action ? `\n         Action: ${it.action}` : '');
+  const sec = (title, arr) => arr.length ? `${title}\n${arr.map(line).join('\n')}\n\n` : '';
+  const overdue = open.filter(isOverdue);
+  const red = open.filter(i=>i.prio==='red' && !overdue.includes(i));
+  const due = open.filter(i=>isDueSoon(i) && !red.includes(i) && !overdue.includes(i));
+  const tray = open.filter(i=>i.prio==='none');
+  let txt = `OFFICE OF THE DEPUTY MINISTER — MORNING DIGEST\nMBHTE-BARMM · ${TODAY.toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}\n${'='.repeat(56)}\n\n`;
+  txt += sec('⚠ OVERDUE — IMMEDIATE ATTENTION', overdue);
+  txt += sec('RED — DECISION REQUIRED TODAY', red);
+  txt += sec('DUE WITHIN 48 HOURS', due);
+  txt += sec('IN RECEIVING TRAY (AWAITING TRIAGE)', tray);
+  txt += `Open items: ${open.length} · Completed: ${items.filter(i=>i.status==='Completed').length}\nPrepared by the Records Officer, ODM·ONE registry.`;
+  document.getElementById('digestText').value = txt;
+  document.getElementById('digestOverlay').classList.add('open');
+}
+function closeDigest(){ document.getElementById('digestOverlay').classList.remove('open'); }
+function copyDigest(btn){
+  const ta = document.getElementById('digestText'); ta.select();
+  try{ navigator.clipboard.writeText(ta.value); }catch(e){ document.execCommand('copy'); }
+  btn.textContent = 'Copied ✓'; setTimeout(()=>btn.textContent='Copy to clipboard', 1600);
+}
+
+/* ============ Export ============ */
+function exportCSV(){
+  const head = ['Control No.','Priority','Date Received','Sender','Subject','Category','Deadline','Office Concerned','Action Required','DM Decision','Days Pending','Status','Date Completed','Attachment'];
+  const rows = items.map(i => [i.id, PRIO[i.prio].label, i.received, i.sender, i.subject, i.category, i.deadline, i.office, i.action, i.dm, daysPending(i)??'', i.status, i.completed, i.attach]);
+  const csv = [head, ...rows].map(r => r.map(c => '"' + String(c??'').replace(/"/g,'""') + '"').join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+  a.download = 'ODM_Correspondence_Log_' + TODAY.toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+/* ============ Init ============ */
+document.getElementById('todayLabel').textContent = TODAY.toLocaleDateString('en-PH',{weekday:'long', month:'long', day:'numeric', year:'numeric'});
+if (SHEET_EDIT_URL){
+  const b = document.getElementById('encodeBtn');
+  b.href = SHEET_EDIT_URL; b.style.display = 'inline-block';
+}
+loadFromSheet();
+if (SHEET_CSV_URL) setInterval(loadFromSheet, POLL_SECONDS * 1000);
+</script>
+</body>
+</html>
