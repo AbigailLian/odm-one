@@ -37,6 +37,10 @@ a{color:var(--forest)}
 /* ---------- Masthead ---------- */
 .masthead{background:var(--forest-deep);color:#fff;border-bottom:4px solid var(--gold)}
 .masthead-inner{max-width:1240px;margin:0 auto;padding:22px 28px 18px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:16px}
+.seal,.seal-fallback{width:62px;height:62px;border-radius:50%;flex:none;background:#fff;border:2px solid var(--gold);box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.seal{object-fit:contain;padding:2px}
+.seal-fallback{display:none;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:13px;color:var(--forest-deep);letter-spacing:.02em}
 .brand .agency{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#BFD6C6;margin-bottom:6px}
 .brand h1{font-family:var(--serif);font-weight:700;font-size:30px;letter-spacing:.01em;line-height:1.1}
 .brand h1 .dot{color:var(--gold)}
@@ -71,6 +75,8 @@ a{color:var(--forest)}
 .kpi.gold::before{background:var(--gold)}
 .kpi .num{font-family:var(--mono);font-size:26px;font-weight:600;line-height:1}
 .kpi .lbl{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:5px;font-weight:600}
+.kpi.clickable{cursor:pointer;transition:box-shadow .12s, transform .12s}
+.kpi.clickable:hover{box-shadow:0 3px 10px rgba(28,42,34,.10);transform:translateY(-1px)}
 
 /* ---------- Tabs ---------- */
 .tabs{max-width:1240px;margin:22px auto 0;padding:0 28px;display:flex;gap:4px;border-bottom:2px solid var(--line)}
@@ -140,6 +146,28 @@ td .prio-chip{display:inline-flex;align-items:center;gap:6px;font-weight:600;fon
 .rulecard{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--gold);border-radius:8px;padding:16px 20px;margin-top:16px;font-size:13.5px}
 .rulecard h3{font-family:var(--serif);font-size:16px;margin-bottom:6px}
 
+/* ---------- Dashboard homepage: alerts + quick links ---------- */
+.alert-list{display:flex;flex-direction:column;gap:8px}
+.alert-row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 16px;width:100%;text-align:left;font-family:var(--sans);font-size:14px;color:var(--ink);cursor:pointer;transition:box-shadow .12s}
+.alert-row:hover{box-shadow:0 3px 10px rgba(28,42,34,.10)}
+.alert-row .adot{width:12px;height:12px;border-radius:50%;flex:none}
+.adot.red{background:var(--red)} .adot.amber{background:var(--amber)} .adot.gold{background:var(--gold)}
+.alert-row .atext{flex:1}
+.alert-row .atext b{font-weight:600}
+.alert-row .achev{color:var(--muted);font-family:var(--mono);flex:none}
+.alert-clear{background:var(--leaf-bg);border:1px solid #CBE0D2;border-radius:8px;padding:14px 16px;color:var(--leaf);font-size:13.5px;font-weight:600}
+.ql-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.ql-card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px;text-align:left;cursor:pointer;font-family:var(--sans);transition:box-shadow .12s, transform .12s;border-top:4px solid var(--forest)}
+.ql-card:hover{box-shadow:0 3px 10px rgba(28,42,34,.10);transform:translateY(-1px)}
+.ql-card .qlnum{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--forest)}
+.ql-card .qltitle{font-weight:700;font-size:13.5px;margin-top:4px}
+.ql-card .qldesc{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4}
+@media(max-width:900px){.ql-grid{grid-template-columns:repeat(2,1fr)}}
+/* drill-down */
+.drill-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:4px 0 4px}
+.backlink{background:none;border:none;font-family:var(--mono);font-size:13px;color:var(--forest);font-weight:600;padding:0}
+.backlink:hover{text-decoration:underline}
+
 /* ---------- Modal / digest ---------- */
 .overlay{display:none;position:fixed;inset:0;background:rgba(20,32,25,.45);z-index:40;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto}
 .overlay.open{display:flex}
@@ -165,9 +193,14 @@ td .prio-chip{display:inline-flex;align-items:center;gap:6px;font-weight:600;fon
 <header class="masthead">
   <div class="masthead-inner">
     <div class="brand">
-      <div class="agency">MBHTE · Bangsamoro Autonomous Region in Muslim Mindanao</div>
-      <h1>ODM<span class="dot">·</span>ONE</h1>
-      <div class="sub">Correspondence Triage &amp; Decision Hub — Office of the Deputy Minister</div>
+      <img class="seal" src="seal.png" alt="MBHTE Seal"
+           onerror="this.style.display='none';document.getElementById('sealFallback').style.display='flex'">
+      <div class="seal-fallback" id="sealFallback">MBHTE</div>
+      <div>
+        <div class="agency">MBHTE · Bangsamoro Autonomous Region in Muslim Mindanao</div>
+        <h1>ODM<span class="dot">·</span>ONE</h1>
+        <div class="sub">Correspondence Triage &amp; Decision Hub — Office of the Deputy Minister</div>
+      </div>
     </div>
     <div class="mast-right">
       <div class="today">Registry date: <strong id="todayLabel"></strong></div>
@@ -181,23 +214,46 @@ td .prio-chip{display:inline-flex;align-items:center;gap:6px;font-weight:600;fon
 </header>
 
 <section class="kpis" aria-label="Triage summary">
-  <div class="kpi red"><div class="num" id="kImmediate">0</div><div class="lbl">Immediate decisions open</div></div>
-  <div class="kpi amber"><div class="num" id="kDue">0</div><div class="lbl">Due within 48 hours</div></div>
-  <div class="kpi red"><div class="num" id="kOverdue">0</div><div class="lbl">Overdue</div></div>
-  <div class="kpi gold"><div class="num" id="kUntriaged">0</div><div class="lbl">In receiving tray</div></div>
-  <div class="kpi leaf"><div class="num" id="kDone">0</div><div class="lbl">Completed</div></div>
+  <div class="kpi slate clickable" onclick="kpiDrill('today')"><div class="num" id="kToday">0</div><div class="lbl">Received Today</div></div>
+  <div class="kpi red clickable" onclick="kpiDrill('decision')"><div class="num" id="kDecision">0</div><div class="lbl">Needs Decision</div></div>
+  <div class="kpi amber clickable" onclick="kpiDrill('progress')"><div class="num" id="kProgress">0</div><div class="lbl">In Progress</div></div>
+  <div class="kpi leaf clickable" onclick="kpiDrill('completed')"><div class="num" id="kCompleted">0</div><div class="lbl">Completed</div></div>
+  <div class="kpi red clickable" onclick="kpiDrill('overdue')"><div class="num" id="kOverdue">0</div><div class="lbl">Overdue</div></div>
 </section>
 
 <nav class="tabs" role="tablist">
-  <button class="tab active" data-panel="desk" onclick="switchTab(this)">Today's Desk</button>
+  <button class="tab active" data-panel="home" onclick="switchTab(this)">Dashboard</button>
+  <button class="tab" data-panel="desk" onclick="switchTab(this)">Today's Desk</button>
   <button class="tab" data-panel="log" onclick="switchTab(this)">Correspondence Log</button>
   <button class="tab" data-panel="protocol" onclick="switchTab(this)">Triage Protocol</button>
 </nav>
 
 <main class="wrap">
 
+  <!-- ============ DASHBOARD HOMEPAGE ============ -->
+  <section class="panel active" id="panel-home">
+    <div id="homeCard">
+      <h2 class="section">Executive alerts</h2>
+      <p class="section-note">Generated automatically from the log — open decisions, overdue items, and deadlines closing in.</p>
+      <div class="alert-list" id="alertList"></div>
+
+      <h2 class="section" style="margin-top:30px">Quick links</h2>
+      <p class="section-note">One tap into the working views. Counts update live from the Sheet.</p>
+      <div class="ql-grid" id="qlGrid"></div>
+    </div>
+    <div id="homeDrill" style="display:none">
+      <div class="drill-head">
+        <button class="backlink" onclick="backToHome()">← Back to dashboard</button>
+        <h2 class="section" id="drillTitle" style="margin:0"></h2>
+        <span class="mono" id="drillCount" style="color:var(--muted)"></span>
+      </div>
+      <p class="section-note" id="drillNote"></p>
+      <div class="slip-list" id="drillList"></div>
+    </div>
+  </section>
+
   <!-- ============ TODAY'S DESK ============ -->
-  <section class="panel active" id="panel-desk">
+  <section class="panel" id="panel-desk">
     <h2 class="section">Requires the Deputy Minister today</h2>
     <p class="section-note">Red items, anything overdue, and anything due within 48 hours. Each item should arrive with its CSW Annex B attached.</p>
     <div class="slip-list" id="deskUrgent"></div>
@@ -503,11 +559,17 @@ const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;',
 /* ============ Rendering ============ */
 function renderKPIs(){
   const open = items.filter(i=>i.status!=='Completed');
-  document.getElementById('kImmediate').textContent = open.filter(i=>i.prio==='red').length;
-  document.getElementById('kDue').textContent = open.filter(isDueSoon).length;
+  document.getElementById('kToday').textContent = items.filter(DRILLS.today.f).length;
+  document.getElementById('kDecision').textContent = items.filter(DRILLS.decision.f).length;
+  document.getElementById('kProgress').textContent = open.length;
+  document.getElementById('kCompleted').textContent = items.filter(i=>i.status==='Completed').length;
   document.getElementById('kOverdue').textContent = open.filter(isOverdue).length;
-  document.getElementById('kUntriaged').textContent = open.filter(i=>i.prio==='none').length;
-  document.getElementById('kDone').textContent = items.filter(i=>i.status==='Completed').length;
+}
+
+function kpiDrill(key){
+  const homeTab = document.querySelector('.tab[data-panel="home"]');
+  if (homeTab) switchTab(homeTab);
+  drillDown(key);
 }
 
 function slipHTML(it){
@@ -574,7 +636,71 @@ function renderLog(){
   }).join('') || `<tr><td colspan="14" style="text-align:center;color:var(--muted);padding:24px">No entries match these filters.</td></tr>`;
 }
 
-function renderAll(){ renderKPIs(); renderDesk(); renderLog(); }
+/* ============ Executive dashboard homepage ============ */
+const isToday = s => { if(!s) return false; const t = TODAY; const x = d(s); return x.getFullYear()===t.getFullYear() && x.getMonth()===t.getMonth() && x.getDate()===t.getDate(); };
+const isDueTomorrow = it => { if(!it.deadline || it.status==='Completed') return false; const t = new Date(TODAY.toDateString()); t.setDate(t.getDate()+1); return d(it.deadline).getTime() === t.getTime(); };
+
+const DRILLS = {
+  today:     {title:'Received today',        note:'Correspondence logged with today\'s date.',                 f: i => isToday(i.received)},
+  decision:  {title:'Needs decision',        note:'Open items requiring a decision from the Deputy Minister.', f: i => i.status!=='Completed' && (i.prio==='red' || (i.category||'').toLowerCase().includes('decision'))},
+  progress:  {title:'In progress',           note:'Open items currently with the DM or an office concerned.',  f: i => i.status!=='Completed'},
+  completed: {title:'Completed',             note:'Closed items, with completion dates for the record.',       f: i => i.status==='Completed'},
+  overdue:   {title:'Overdue',               note:'Deadline has passed and the item remains open.',            f: i => isOverdue(i)},
+  action:    {title:'Action required',       note:'Open items with a stated action or recommendation.',        f: i => i.status!=='Completed' && !!i.action && !/^no action/i.test(i.action)},
+  ministry:  {title:'Ministry actions',      note:'Open items endorsed to an office and awaiting compliance.', f: i => i.status!=='Completed' && !!i.office},
+  calendar:  {title:'Deadline calendar',     note:'Open items with deadlines, nearest first.',                 f: i => i.status!=='Completed' && !!i.deadline, sort:(a,b)=> d(a.deadline)-d(b.deadline)},
+  archive:   {title:'Email archive',         note:'The complete correspondence registry.',                     f: () => true}
+};
+let activeDrill = null;
+
+function renderHome(){
+  const open = items.filter(i=>i.status!=='Completed');
+  /* Executive alerts — generated from the data */
+  const alerts = [];
+  open.filter(i=>i.prio==='red').forEach(i => alerts.push({dot:'red', html:`<b>${esc(i.sender)}</b> — ${esc(i.action ? shortAct(i.action) : 'decision required today')}`, drill:'decision'}));
+  open.filter(i=>isOverdue(i) && i.prio!=='red').forEach(i => alerts.push({dot:'red', html:`<b>${esc(i.sender)}</b> — overdue since ${fmt(i.deadline)}`, drill:'overdue'}));
+  open.filter(isDueTomorrow).forEach(i => alerts.push({dot:'amber', html:`<b>${esc(i.sender)}</b> — response due tomorrow`, drill:'calendar'}));
+  const untriaged = open.filter(i=>i.prio==='none').length;
+  if (untriaged) alerts.push({dot:'gold', html:`<b>${untriaged}</b> item${untriaged===1?'':'s'} in the receiving tray awaiting triage`, drill:'progress'});
+
+  document.getElementById('alertList').innerHTML = alerts.length
+    ? alerts.map(a => `<button class="alert-row" onclick="drillDown('${a.drill}')"><span class="adot ${a.dot}"></span><span class="atext">${a.html}</span><span class="achev">→</span></button>`).join('')
+    : `<div class="alert-clear">✓ No alerts — the desk is clear.</div>`;
+
+  /* Quick links with live counts */
+  const QL = [
+    {key:'action',    title:'Action Required', desc:'Open items with a stated recommendation'},
+    {key:'ministry',  title:'Ministry Actions', desc:'Endorsed to offices, awaiting compliance'},
+    {key:'calendar',  title:'Calendar', desc:'Open deadlines, nearest first'},
+    {key:'completed', title:'Completed', desc:'Closed items on record'},
+    {key:'archive',   title:'Email Archive', desc:'The complete registry'}
+  ];
+  document.getElementById('qlGrid').innerHTML = QL.map(q => {
+    const n = items.filter(DRILLS[q.key].f).length;
+    return `<button class="ql-card" onclick="drillDown('${q.key}')"><div class="qlnum">${n}</div><div class="qltitle">${q.title}</div><div class="qldesc">${q.desc}</div></button>`;
+  }).join('');
+}
+function shortAct(s){ return s.length > 60 ? s.slice(0,57) + '…' : s; }
+
+function drillDown(key){
+  activeDrill = key;
+  const dcfg = DRILLS[key];
+  let list = items.filter(dcfg.f);
+  if (dcfg.sort) list = list.slice().sort(dcfg.sort);
+  document.getElementById('drillTitle').textContent = dcfg.title;
+  document.getElementById('drillNote').textContent = dcfg.note;
+  document.getElementById('drillCount').textContent = list.length + ' item' + (list.length===1?'':'s');
+  document.getElementById('drillList').innerHTML = list.length ? list.map(slipHTML).join('') : `<div class="empty">No items in this view right now.</div>`;
+  document.getElementById('homeCard').style.display = 'none';
+  document.getElementById('homeDrill').style.display = 'block';
+}
+function backToHome(){
+  activeDrill = null;
+  document.getElementById('homeDrill').style.display = 'none';
+  document.getElementById('homeCard').style.display = 'block';
+}
+
+function renderAll(){ renderKPIs(); renderHome(); renderDesk(); renderLog(); if(activeDrill) drillDown(activeDrill); }
 
 function switchTab(btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
